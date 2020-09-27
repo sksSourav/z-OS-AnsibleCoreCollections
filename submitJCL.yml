@@ -1,0 +1,25 @@
+---
+  - hosts: mtm
+    gather_facts: no
+    environment:
+      "{{default_environment}}"
+        
+    collections:
+      - ibm.ibm_zos_core
+    
+    tasks:
+      - name: Submit a IEFBR14
+        zos_job_submit:
+          src: "{{ansible_user}}.JCL(CHK)"
+          location: DATA_SET
+          wait: true
+          return_output: true
+        register: job_detail
+
+      - name: Setting fact `Job Results`
+        set_fact:
+          job_results: "{{ job_detail.jobs[0]}}"
+
+      - name: Results
+        debug:  
+          msg: "Job {{ job_results.job_id}} completed with {{ job_results.ret_code.msg}}"

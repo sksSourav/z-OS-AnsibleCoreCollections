@@ -1,0 +1,28 @@
+---
+  - hosts: mtm
+    gather_facts: no
+    environment:
+      "{{default_environment}}"
+        
+    collections:
+      - ibm.ibm_zos_core
+    
+    tasks:
+
+      - name: Create a directory if it does not exist in local server
+        file:
+          path: /root/mtm2020data
+          state: directory
+          mode: '0777'
+        delegate_to: localhost
+
+      - name: Fetch a sequential data set and store in /tmp/SOME.DATA.SET
+        zos_fetch:
+          src: "{{ item }}"
+          dest: /root/mtm2020data/
+          flat: true
+        with_items:
+          - Z00894.JCL
+          - Z00894.SOURCE
+          - Z00894.WORK
+          - Z00894.SPFLOG1.LIST

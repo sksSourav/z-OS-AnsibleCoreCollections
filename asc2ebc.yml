@@ -1,0 +1,20 @@
+---
+  - hosts: mtm
+    gather_facts: no
+    environment:
+      "{{default_environment}}"
+        
+    collections:
+      - ibm.ibm_zos_core
+    
+    tasks:
+      - name: create output file
+        zos_data_set:
+          name: Z00894.WORK(ASCMSG)
+          type: MEMBER
+      - name: convert  ASCII to EBCDIC
+        zos_encode:
+          src: MTM2020.PUBLIC.INPUT(ASCMSG)
+          dest: Z00894.WORK(ASCMSG)
+          from_encoding: ISO8859-1
+          to_encoding: IBM-1047
